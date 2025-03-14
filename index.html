@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="style.css" />
+		<title>CS2 Team Generator</title>
+	</head>
+	<body>
+		<div class="container">
+			<h1>CS2 Team Generator</h1>
+
+			<div id="modeSelection">
+				<button onclick="startGame(2)">2v2</button>
+				<button onclick="startGame(3)">3v3</button>
+				<button onclick="startGame(4)">4v4</button>
+				<button onclick="startGame(5)">5v5</button>
+				<button onclick="startAllInOne()">All in One</button>
+			</div>
+
+			<div id="playerInputScreen" class="hidden">
+				<h2>Enter Player Names</h2>
+				<div id="playerInputs"></div>
+				<button onclick="generateTeams()">Generate Teams</button>
+			</div>
+
+			<div id="teamScreen" class="hidden">
+				<h2>Generated Teams</h2>
+				<div class="teams">
+					<div class="team ct-team">
+						<h3>Team 1️⃣</h3>
+						<ol id="team1List"></ol>
+					</div>
+					<div class="team tr-team">
+						<h3>Team 2️⃣</h3>
+						<ol id="team2List"></ol>
+					</div>
+				</div>
+				<button onclick="generateTeams()">Regenerate</button>
+				<button onclick="nextStep()">Next</button>
+			</div>
+
+			<div id="mapSelectionScreen" class="hidden">
+				<h2>Choose Map Mode</h2>
+				<button onclick="chooseMapMode('bo1')">BO1</button>
+				<button onclick="chooseMapMode('bo3')">BO3</button>
+				<button onclick="chooseMapMode('bo5')">BO5</button>
+			</div>
+
+			<div id="mapScreen" class="hidden">
+				<h2>Generated Maps</h2>
+				<ol id="mapList"></ol>
+				<!-- ✅ ol -> ul ga o'zgartirildi -->
+				<button onclick="generateMaps()">Regenerate Maps</button>
+				<button onclick="finalStep()">Next</button>
+			</div>
+
+			<div id="teamDecisionScreen" class="hidden" style="margin-bottom: 10px">
+				<h2>Final Team Decision</h2>
+				<hr />
+				<p id="teamDecisionDisplay"></p>
+				<hr />
+				<div class="teams">
+					<div id="finalTeam1" class="team"><h3>Team 1️⃣</h3></div>
+					<div id="finalTeam2" class="team"><h3>Team 2️⃣</h3></div>
+				</div>
+				<button onclick="determineSides()">Decide CT / TR</button>
+				<button onclick="showResults()">Finish</button>
+			</div>
+
+			<div id="finalResultsScreen" class="hidden">
+				<h2>Final Results</h2>
+				<h3 style="font-weight: bold">Match Format: <span id="selectedFormat"></span></h3>
+				<hr />
+				<div id="finalTeamsDisplay">
+					<div class="divForFlex">
+						<div class="final-team">
+							<h3>Team 1️⃣ (CT)</h3>
+							<ol id="finalTeam1List"></ol>
+						</div>
+						<!--  -->
+						<div class="final-team">
+							<h3>Team 2️⃣ (TR)</h3>
+							<ol id="finalTeam2List"></ol>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div id="finalSidesDisplay">Team 1️⃣ - CT | Team 2️⃣ - TR</div>
+				<hr />
+				<div id="finalMapsDisplay"></div>
+			</div>
+		</div>
+		<!-- main app -->
+		<script src="app.js" defer></script>
+	</body>
+</html>
