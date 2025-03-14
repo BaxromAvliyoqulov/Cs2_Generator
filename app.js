@@ -236,3 +236,55 @@ function restartGame() {
 		closeButton.remove();
 	}
 }
+// O'yinchilar ro'yxatini avtomatik yaratish
+function generatePlayers(playerCount) {
+	let players = [];
+	for (let i = 1; i <= playerCount; i++) {
+		players.push(`Player${i}`);
+	}
+	return players;
+}
+
+// Jamoalarni yaratish
+function generateTeams(players) {
+	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
+	let mid = Math.floor(players.length / 2);
+
+	let team1 = shuffledPlayers.slice(0, mid);
+	let team2 = shuffledPlayers.slice(mid);
+
+	console.log("Team 1:", team1);
+	console.log("Team 2:", team2);
+}
+
+// Random map tanlash
+function pickRandomMap() {
+	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass"];
+	let selectedMap = maps[Math.floor(Math.random() * maps.length)];
+	console.log("Selected Map:", selectedMap);
+}
+
+// CT yoki T tomonini aniqlash
+function pickRandomSide() {
+	let sides = ["CT", "T"];
+	let selectedSide = sides[Math.floor(Math.random() * sides.length)];
+	console.log("Starting Side:", selectedSide);
+}
+
+// O'yinni tugatish
+function finishGame() {
+	console.log("Game Setup Complete! ✅");
+}
+
+// Quick Start funksiyasi
+function startGameQuick() {
+	let players = generatePlayers(10); // 10 ta Player yaratish
+
+	setTimeout(() => generateTeams(players), 500);
+	setTimeout(() => pickRandomMap(), 1000);
+	setTimeout(() => pickRandomSide(), 1500);
+	setTimeout(() => finishGame(), 2000);
+}
+
+// HTML Tugma
+document.getElementById("quickStart").addEventListener("click", startGameQuick);
