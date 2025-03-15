@@ -2,301 +2,265 @@ const players = [];
 const maps = ["Mirage", "Inferno", "Nuke", "Overpass", "Ancient", "Anubis", "Vertigo"];
 let selectedMapMode = "bo1";
 let finalSidesText = "";
+let team1Players = [];
+let team2Players = [];
 
 document.addEventListener("keydown", function (event) {
-	if (event.key === "Enter") {
-		const activeScreen = document.querySelector(".screen:not(.hidden)");
+    if (event.key === "Enter") {
+        const activeScreen = document.querySelector(".screen:not(.hidden)");
 
-		if (activeScreen.id === "playerInputScreen") {
-			generateTeams();
-		} else if (activeScreen.id === "teamScreen") {
-			nextStep();
-		} else if (activeScreen.id === "mapSelectionScreen") {
-			chooseMapMode(selectedMapMode);
-		} else if (activeScreen.id === "mapScreen") {
-			finalStep();
-		} else if (activeScreen.id === "teamDecisionScreen") {
-			showResults();
-		}
-	}
+        if (activeScreen.id === "playerInputScreen") {
+            generateTeams();
+        } else if (activeScreen.id === "teamScreen") {
+            nextStep();
+        } else if (activeScreen.id === "mapSelectionScreen") {
+            chooseMapMode(selectedMapMode);
+        } else if (activeScreen.id === "mapScreen") {
+            finalStep();
+        } else if (activeScreen.id === "teamDecisionScreen") {
+            showResults();
+        }
+    }
 });
 
 function startGame(playerCount) {
-	players.length = 0;
-	document.getElementById("playerInputScreen").classList.remove("hidden");
-	document.getElementById("modeSelection").classList.add("hidden");
+    players.length = 0;
+    document.getElementById("playerInputScreen").classList.remove("hidden");
+    document.getElementById("modeSelection").classList.add("hidden");
 
-	const playerInputs = document.getElementById("playerInputs");
-	playerInputs.innerHTML = "";
+    const playerInputs = document.getElementById("playerInputs");
+    playerInputs.innerHTML = "";
 
-	for (let i = 0; i < playerCount * 2; i++) {
-		const input = document.createElement("input");
-		input.type = "text";
-		input.placeholder = `Player ${i + 1}`;
-		input.classList.add("player-input");
+    for (let i = 0; i < playerCount * 2; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = `Player ${i + 1}`;
+        input.classList.add("player-input");
 
-		input.addEventListener("input", function () {
-			if (input.value.length > 10) {
-				input.value = input.value.slice(0, 10);
-			}
-		});
+        input.addEventListener("input", function () {
+            if (input.value.length > 10) {
+                input.value = input.value.slice(0, 10);
+            }
+        });
 
-		input.addEventListener("keydown", function (event) {
-			if (event.key === "Enter") {
-				event.preventDefault();
-				if (i < playerCount * 2 - 1) {
-					playerInputs.children[i + 1].focus();
-				} else {
-					generateTeams();
-				}
-			}
-		});
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                if (i < playerCount * 2 - 1) {
+                    playerInputs.children[i + 1].focus();
+                } else {
+                    generateTeams();
+                }
+            }
+        });
 
-		players.push(input);
-		playerInputs.appendChild(input);
-	}
+        players.push(input);
+        playerInputs.appendChild(input);
+    }
 
-	if (players.length > 0) {
-		players[0].focus();
-	}
+    if (players.length > 0) {
+        players[0].focus();
+    }
 }
 
 function generateTeams() {
-	const teamScreen = document.getElementById("teamScreen");
-	const loadingDiv = document.createElement("div");
-	loadingDiv.classList.add("loading-animation");
-	loadingDiv.innerText = "Generating teams...";
-	teamScreen.appendChild(loadingDiv);
+    const teamScreen = document.getElementById("teamScreen");
+    const loadingDiv = document.createElement("div");
+    loadingDiv.classList.add("loading-animation");
+    loadingDiv.innerText = "Generating teams...";
+    teamScreen.appendChild(loadingDiv);
 
-	setTimeout(() => {
-		loadingDiv.remove();
+    setTimeout(() => {
+        loadingDiv.remove();
 
-		const playerNames = players.map((input) => input.value.trim()).filter((name) => name.length >= 1);
+        const playerNames = players.map((input) => input.value.trim()).filter((name) => name.length >= 1);
 
-		if (playerNames.length < players.length) {
-			showToast("Iltimos, barcha o'yinchilarni kiriting!", "red");
-			return;
-		}
+        if (playerNames.length < players.length) {
+            showToast("Iltimos, barcha o'yinchilarni kiriting!", "red");
+            return;
+        }
 
-		const shuffledPlayers = [...playerNames].sort(() => Math.random() - 0.5);
-		const half = Math.floor(shuffledPlayers.length / 2);
-		const ctTeam = shuffledPlayers.slice(0, half);
-		const trTeam = shuffledPlayers.slice(half);
+        const shuffledPlayers = [...playerNames].sort(() => Math.random() - 0.5);
+        const half = Math.floor(shuffledPlayers.length / 2);
+        team1Players = shuffledPlayers.slice(0, half);
+        team2Players = shuffledPlayers.slice(half);
 
-		const team1List = document.getElementById("team1List");
-		const team2List = document.getElementById("team2List");
+        const team1List = document.getElementById("team1List");
+        const team2List = document.getElementById("team2List");
 
-		if (!team1List || !team2List) {
-			console.error("team1List yoki team2List topilmadi!");
-			return;
-		}
+        if (!team1List || !team2List) {
+            console.error("team1List yoki team2List topilmadi!");
+            return;
+        }
 
-		team1List.innerHTML = ctTeam.map((p) => `<li>${p}</li>`).join("");
-		team2List.innerHTML = trTeam.map((p) => `<li>${p}</li>`).join("");
+        team1List.innerHTML = team1Players.map((p) => `<li>${p}</li>`).join("");
+        team2List.innerHTML = team2Players.map((p) => `<li>${p}</li>`).join("");
 
-		teamScreen.classList.remove("hidden");
-		document.getElementById("playerInputScreen").classList.add("hidden");
+        teamScreen.classList.remove("hidden");
+        document.getElementById("playerInputScreen").classList.add("hidden");
 
-		showToast("Teams Generated!", "green");
-	}, 1500);
+        showToast("Teams Generated!", "green");
+    }, 1500);
 }
 
 function nextStep() {
-	document.getElementById("teamScreen").classList.add("hidden");
-	document.getElementById("mapSelectionScreen").classList.remove("hidden");
+    document.getElementById("teamScreen").classList.add("hidden");
+    document.getElementById("mapSelectionScreen").classList.remove("hidden");
 }
 
 function chooseMapMode(mode) {
-	selectedMapMode = mode;
-	document.getElementById("mapSelectionScreen").classList.add("hidden");
-	document.getElementById("mapScreen").classList.remove("hidden");
-	generateMaps();
+    selectedMapMode = mode;
+    document.getElementById("mapSelectionScreen").classList.add("hidden");
+    document.getElementById("mapScreen").classList.remove("hidden");
+    generateMaps();
 }
 
 function generateMaps() {
-	const mapList = document.getElementById("mapList");
-	mapList.innerHTML = "";
+    const mapList = document.getElementById("mapList");
+    mapList.innerHTML = "";
 
-	const loadingDiv = document.createElement("div");
-	loadingDiv.classList.add("loading-animation");
-	loadingDiv.innerText = "Generating maps...";
-	mapList.appendChild(loadingDiv);
+    const loadingDiv = document.createElement("div");
+    loadingDiv.classList.add("loading-animation");
+    loadingDiv.innerText = "Generating maps...";
+    mapList.appendChild(loadingDiv);
 
-	setTimeout(() => {
-		loadingDiv.remove(); // ⬅️ Loading animatsiyasini o‘chirish
+    setTimeout(() => {
+        loadingDiv.remove();
 
-		let selectedMaps = [];
-		let requiredCount = selectedMapMode === "bo1" ? 1 : selectedMapMode === "bo3" ? 3 : 5;
+        let selectedMaps = [];
+        let requiredCount = selectedMapMode === "bo1" ? 1 : selectedMapMode === "bo3" ? 3 : 5;
 
-		while (selectedMaps.length < requiredCount) {
-			let randomMap = maps[Math.floor(Math.random() * maps.length)];
-			if (!selectedMaps.includes(randomMap)) selectedMaps.push(randomMap);
-		}
+        while (selectedMaps.length < requiredCount) {
+            let randomMap = maps[Math.floor(Math.random() * maps.length)];
+            if (!selectedMaps.includes(randomMap)) selectedMaps.push(randomMap);
+        }
 
-		mapList.innerHTML = selectedMaps.map((m) => `<li>${m}</li>`).join("");
-	}, 1500);
+        mapList.innerHTML = selectedMaps.map((m) => `<li>${m}</li>`).join("");
+    }, 1500);
 }
 
 function determineSides() {
-	const teamDecisionDisplay = document.getElementById("teamDecisionDisplay");
-	teamDecisionDisplay.innerHTML = "";
+    const teamDecisionDisplay = document.getElementById("teamDecisionDisplay");
+    teamDecisionDisplay.innerHTML = "";
 
-	const loadingDiv = document.createElement("div");
-	loadingDiv.classList.add("loading-animation");
-	loadingDiv.innerText = "Deciding sides...";
-	teamDecisionDisplay.appendChild(loadingDiv);
+    const loadingDiv = document.createElement("div");
+    loadingDiv.classList.add("loading-animation");
+    loadingDiv.innerText = "Deciding sides...";
+    teamDecisionDisplay.appendChild(loadingDiv);
 
-	setTimeout(() => {
-		loadingDiv.remove(); // ⬅️ Loading animatsiyasini o‘chirish
+    setTimeout(() => {
+        loadingDiv.remove();
 
-		const randomSide = Math.random() < 0.5 ? "CT" : "TR";
-		const team1Side = randomSide;
-		const team2Side = randomSide === "CT" ? "TR" : "CT";
+        const randomSide = Math.random() < 0.5 ? "CT" : "TR";
+        const team1Side = randomSide;
+        const team2Side = randomSide === "CT" ? "TR" : "CT";
 
-		finalSidesText = `Team 1: ${team1Side} | Team 2: ${team2Side}`;
-
-		// **Bu yerda natijani chiqaramiz**
-		teamDecisionDisplay.innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
-	}, 1500);
+        finalSidesText = `Team 1: ${team1Side} | Team 2: ${team2Side}`;
+        
+        teamDecisionDisplay.innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
+    }, 1500);
 }
 
 function finalStep() {
-	document.getElementById("mapScreen").classList.add("hidden");
-	document.getElementById("teamDecisionScreen").classList.remove("hidden");
+    document.getElementById("mapScreen").classList.add("hidden");
+    document.getElementById("teamDecisionScreen").classList.remove("hidden");
 
-	determineSides();
+    determineSides();
 }
 
 function showResults() {
-	document.getElementById("finalResultsScreen").classList.remove("hidden");
-	document.getElementById("teamDecisionScreen").classList.add("hidden");
+    document.getElementById("finalResultsScreen").classList.remove("hidden");
+    document.getElementById("teamDecisionScreen").classList.add("hidden");
 
-	const playerNames = players.map((input) => input.value.trim()).filter((name) => name !== "");
+    // Ensure we're using the teams created in generateTeams()
+    const teamSides = finalSidesText.split("|");
+    const team1Side = teamSides[0].trim().split(": ")[1].trim();
+    const team2Side = teamSides[1].trim().split(": ")[1].trim();
 
-	let half = Math.floor(playerNames.length / 2);
-	let team1Players = playerNames.slice(0, half);
-	let team2Players = playerNames.slice(half);
+    let finalPlayers = `
+    <div class="final-team">
+        <h3>Team 1️⃣ (${team1Side})</h3>
+        <ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
 
-	let finalSidesText = `Team 1️⃣ - CT | Team 2️⃣ - TR`;
+    <hr style="width: 50%; height: 3px; background-color: crimson; margin: auto; border: none;" />
 
-	let finalPlayers = `
-	<div class="final-team">
-		<h3>Team 1️⃣ (CT)</h3>
-		<ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
-	</div>
+    <div class="final-team">
+        <h3>Team 2️⃣ (${team2Side})</h3>
+        <ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+    `;
 
-	<hr style="width: 50%; height: 3px; background-color: crimson; margin: auto; border: none;" />
+    let mapList = document.getElementById("mapList").innerHTML.trim();
+    let finalMaps = mapList
+        ? `<h3><strong>Maps Order:</strong></h3><ol>${mapList}</ol>`
+        : `<h3><strong>Maps Order:</strong></h3><p>No maps selected.</p>`;
 
-	<div class="final-team">
-		<h3>Team 2️⃣ (TR)</h3>
-		<ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
-	</div>
-`;
+    document.getElementById("finalTeamsDisplay").innerHTML = finalPlayers;
+    document.getElementById("finalMapsDisplay").innerHTML = finalMaps;
+    document.getElementById("finalSidesDisplay").innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
 
-	let mapList = document.getElementById("mapList").innerHTML.trim();
-	let finalMaps = mapList
-		? `<h3><strong>Maps Order:</strong></h3><ol>${mapList}</ol>`
-		: `<h3><strong>Maps Order:</strong></h3><p>No maps selected.</p>`;
+    // Remove any existing close button before adding a new one
+    const existingButton = document.getElementById("restartButton");
+    if (existingButton) {
+        existingButton.remove();
+    }
 
-	document.getElementById("finalTeamsDisplay").innerHTML = finalPlayers;
-	document.getElementById("finalMapsDisplay").innerHTML = finalMaps;
-	document.getElementById(
-		"finalSidesDisplay"
-	).innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
+    let closeButton = document.createElement("button");
+    closeButton.id = "restartButton";
+    closeButton.innerText = "Close & Restart";
+    closeButton.style.marginTop = "20px";
+    closeButton.style.padding = "10px 20px";
+    closeButton.style.fontSize = "18px";
+    closeButton.style.cursor = "pointer";
+    closeButton.addEventListener("click", restartGame);
 
-	let closeButton = document.createElement("button");
-	closeButton.innerText = "Close & Restart";
-	closeButton.style.marginTop = "20px";
-	closeButton.style.padding = "10px 20px";
-	closeButton.style.fontSize = "18px";
-	closeButton.style.cursor = "pointer";
-	closeButton.addEventListener("click", restartGame);
-
-	document.getElementById("finalResultsScreen").appendChild(closeButton);
+    document.getElementById("finalResultsScreen").appendChild(closeButton);
 }
 
 function restartGame() {
-	// Barcha screenlarni yopish
-	document.querySelectorAll(".screen").forEach((screen) => screen.classList.add("hidden"));
-
-	// **Final Results oynasini ham yashirish**
-	document.getElementById("finalResultsScreen").classList.add("hidden");
-
-	// Asosiy boshlang‘ich ekranni ko‘rsatish
-	document.getElementById("modeSelection").classList.remove("hidden");
-
-	// Final natijalarni tozalash
-	document.getElementById("finalTeamsDisplay").innerHTML = "";
-	document.getElementById("finalMapsDisplay").innerHTML = "";
-	document.getElementById("finalSidesDisplay").innerHTML = "";
-
-	// **Close tugmasi har safar o‘chib ketadi**
-	const closeButton = document.getElementById("finalResultsScreen").querySelector("button");
-	if (closeButton) {
-		closeButton.remove();
-	}
-}
-// O'yinchilar ro'yxatini avtomatik yaratish
-function generatePlayers(playerCount) {
-	let players = [];
-	for (let i = 1; i <= playerCount; i++) {
-		players.push(`Player${i}`);
-	}
-	return players;
+    // Reset all screens
+    document.querySelectorAll(".screen").forEach((screen) => screen.classList.add("hidden"));
+    
+    // Reset the final results screen
+    document.getElementById("finalResultsScreen").classList.add("hidden");
+    
+    // Show the initial screen
+    document.getElementById("modeSelection").classList.remove("hidden");
+    
+    // Clear final results
+    document.getElementById("finalTeamsDisplay").innerHTML = "";
+    document.getElementById("finalMapsDisplay").innerHTML = "";
+    document.getElementById("finalSidesDisplay").innerHTML = "";
+    
+    // Clear stored teams
+    team1Players = [];
+    team2Players = [];
+    
+    // Remove close button
+    const closeButton = document.getElementById("restartButton");
+    if (closeButton) {
+        closeButton.remove();
+    }
 }
 
-// Jamoalarni yaratish
-function generateTeams(players) {
-	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
-	let mid = Math.floor(players.length / 2);
-
-	let team1 = shuffledPlayers.slice(0, mid);
-	let team2 = shuffledPlayers.slice(mid);
-
-	console.log("Team 1:", team1);
-	console.log("Team 2:", team2);
+// Helper function for displaying toast messages (not defined in original code)
+function showToast(message, color) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = color;
+    toast.style.color = "white";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
-
-// Random map tanlash
-function pickRandomMap() {
-	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass"];
-	let selectedMap = maps[Math.floor(Math.random() * maps.length)];
-	console.log("Selected Map:", selectedMap);
-}
-
-// CT yoki T tomonini aniqlash
-function pickRandomSide() {
-	let sides = ["CT", "T"];
-	let selectedSide = sides[Math.floor(Math.random() * sides.length)];
-	console.log("Starting Side:", selectedSide);
-}
-
-// O'yinni tugatish
-function finishGame() {
-	console.log("Game Setup Complete! ✅");
-}
-
-// Quick Start funksiyasi
-function startGameQuick() {
-	let players = generatePlayers(10); // 10 ta Player yaratish
-
-	setTimeout(() => generateTeams(players), 500);
-	setTimeout(() => pickRandomMap(), 1000);
-	setTimeout(() => pickRandomSide(), 1500);
-	setTimeout(() => finishGame(), 2000);
-}
-
-// HTML Tugma
-document.getElementById("quickStart").addEventListener("click", startGameQuick);
-const { Telegraf } = require("telegraf");
-const bot = new Telegraf("8150039939:AAER_LPw3SPJXv0lLVkIxGd_stiuBwJOmxc");
-
-bot.start((ctx) => {
-	ctx.reply(
-		"Salom! 👋 'Cs2 Generator'ga Xush kelipsiz\n\n" +
-			"Jamoa, Xaritalarni Random tanlab beradi \n" +
-			`ℹ️ Savollaringiz bolsa, "@Baxrom_Dev" ga yozing.`
-	);
-});
-
-bot.launch();
