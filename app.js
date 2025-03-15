@@ -294,18 +294,3 @@ function startGameQuick() {
 	setTimeout(() => pickRandomSide(), 1500);
 	setTimeout(() => finishGame(), 2000);
 }
-
-// HTML Tugma
-document.getElementById("quickStart").addEventListener("click", startGameQuick);
-const { Telegraf } = require("telegraf");
-const bot = new Telegraf("8150039939:AAER_LPw3SPJXv0lLVkIxGd_stiuBwJOmxc");
-
-bot.start((ctx) => {
-	ctx.reply(
-		"Salom! 👋 'Cs2 Generator'ga Xush kelipsiz\n\n" +
-			"Jamoa, Xaritalarni Random tanlab beradi \n" +
-			`ℹ️ Savollaringiz bolsa, "@Baxrom_Dev" ga yozing.`
-	);
-});
-
-bot.launch();
