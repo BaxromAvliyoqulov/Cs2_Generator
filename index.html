@@ -34,11 +34,11 @@
 			<div id="teamScreen" class="hidden">
 				<h2>Generated Teams</h2>
 				<div class="teams">
-					<div class="team ct-team">
+					<div class="team ct-team" id="team">
 						<h3>Team 1️⃣</h3>
 						<ol id="team1List"></ol>
 					</div>
-					<div class="team tr-team">
+					<div class="team tr-team" id="team">
 						<h3>Team 2️⃣</h3>
 						<ol id="team2List"></ol>
 					</div>
@@ -69,7 +69,7 @@
 				<hr />
 				<div class="teams">
 					<div id="finalTeam1" class="team"><h3>Team 1️⃣</h3></div>
-					<hr />
+					<hr  class="max"/>
 					<div id="finalTeam2" class="team"><h3>Team 2️⃣</h3></div>
 				</div>
 				<button onclick="determineSides()">Decide CT / TR</button>
@@ -82,12 +82,12 @@
 				<hr />
 				<div id="finalTeamsDisplay">
 					<div class="divForFlex">
-						<div class="final-team">
+						<div class="final-team" id="team">
 							<h3>Team 1️⃣ (CT)</h3>
 							<ol id="finalTeam1List"></ol>
 						</div>
 						<hr />
-						<div class="final-team">
+						<div class="final-team" id="team">
 							<h3>Team 2️⃣ (TR)</h3>
 							<ol id="finalTeam2List"></ol>
 						</div>

@@ -2,6 +2,8 @@ const players = [];
 const maps = ["Mirage", "Inferno", "Nuke", "Overpass", "Ancient", "Anubis", "Vertigo"];
 let selectedMapMode = "bo1";
 let finalSidesText = "";
+let team1Players = [];
+let team2Players = [];
 
 document.addEventListener("keydown", function (event) {
 	if (event.key === "Enter") {
@@ -80,8 +82,8 @@ function generateTeams() {
 
 		const shuffledPlayers = [...playerNames].sort(() => Math.random() - 0.5);
 		const half = Math.floor(shuffledPlayers.length / 2);
-		const ctTeam = shuffledPlayers.slice(0, half);
-		const trTeam = shuffledPlayers.slice(half);
+		team1Players = shuffledPlayers.slice(0, half);
+		team2Players = shuffledPlayers.slice(half);
 
 		const team1List = document.getElementById("team1List");
 		const team2List = document.getElementById("team2List");
@@ -91,8 +93,8 @@ function generateTeams() {
 			return;
 		}
 
-		team1List.innerHTML = ctTeam.map((p) => `<li>${p}</li>`).join("");
-		team2List.innerHTML = trTeam.map((p) => `<li>${p}</li>`).join("");
+		team1List.innerHTML = team1Players.map((p) => `<li>${p}</li>`).join("");
+		team2List.innerHTML = team2Players.map((p) => `<li>${p}</li>`).join("");
 
 		teamScreen.classList.remove("hidden");
 		document.getElementById("playerInputScreen").classList.add("hidden");
@@ -123,7 +125,7 @@ function generateMaps() {
 	mapList.appendChild(loadingDiv);
 
 	setTimeout(() => {
-		loadingDiv.remove(); // ⬅️ Loading animatsiyasini o‘chirish
+		loadingDiv.remove();
 
 		let selectedMaps = [];
 		let requiredCount = selectedMapMode === "bo1" ? 1 : selectedMapMode === "bo3" ? 3 : 5;
@@ -147,7 +149,7 @@ function determineSides() {
 	teamDecisionDisplay.appendChild(loadingDiv);
 
 	setTimeout(() => {
-		loadingDiv.remove(); // ⬅️ Loading animatsiyasini o‘chirish
+		loadingDiv.remove();
 
 		const randomSide = Math.random() < 0.5 ? "CT" : "TR";
 		const team1Side = randomSide;
@@ -155,7 +157,6 @@ function determineSides() {
 
 		finalSidesText = `Team 1: ${team1Side} | Team 2: ${team2Side}`;
 
-		// **Bu yerda natijani chiqaramiz**
 		teamDecisionDisplay.innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
 	}, 1500);
 }
@@ -171,27 +172,24 @@ function showResults() {
 	document.getElementById("finalResultsScreen").classList.remove("hidden");
 	document.getElementById("teamDecisionScreen").classList.add("hidden");
 
-	const playerNames = players.map((input) => input.value.trim()).filter((name) => name !== "");
-
-	let half = Math.floor(playerNames.length / 2);
-	let team1Players = playerNames.slice(0, half);
-	let team2Players = playerNames.slice(half);
-
-	let finalSidesText = `Team 1️⃣ - CT | Team 2️⃣ - TR`;
+	// Ensure we're using the teams created in generateTeams()
+	const teamSides = finalSidesText.split("|");
+	const team1Side = teamSides[0].trim().split(": ")[1].trim();
+	const team2Side = teamSides[1].trim().split(": ")[1].trim();
 
 	let finalPlayers = `
-	<div class="final-team">
-		<h3>Team 1️⃣ (CT)</h3>
-		<ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
-	</div>
+    <div class="final-team">
+        <h3>Team 1️⃣ (${team1Side})</h3>
+        <ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
 
-	<hr style="width: 50%; height: 3px; background-color: crimson; margin: auto; border: none;" />
+    <hr style="width: 50%; height: 3px; background-color: crimson; margin: auto; border: none;" />
 
-	<div class="final-team">
-		<h3>Team 2️⃣ (TR)</h3>
-		<ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
-	</div>
-`;
+    <div class="final-team">
+        <h3>Team 2️⃣ (${team2Side})</h3>
+        <ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+    `;
 
 	let mapList = document.getElementById("mapList").innerHTML.trim();
 	let finalMaps = mapList
@@ -204,7 +202,14 @@ function showResults() {
 		"finalSidesDisplay"
 	).innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
 
+	// Remove any existing close button before adding a new one
+	const existingButton = document.getElementById("restartButton");
+	if (existingButton) {
+		existingButton.remove();
+	}
+
 	let closeButton = document.createElement("button");
+	closeButton.id = "restartButton";
 	closeButton.innerText = "Close & Restart";
 	closeButton.style.marginTop = "20px";
 	closeButton.style.padding = "10px 20px";
@@ -216,22 +221,26 @@ function showResults() {
 }
 
 function restartGame() {
-	// Barcha screenlarni yopish
+	// Reset all screens
 	document.querySelectorAll(".screen").forEach((screen) => screen.classList.add("hidden"));
 
-	// **Final Results oynasini ham yashirish**
+	// Reset the final results screen
 	document.getElementById("finalResultsScreen").classList.add("hidden");
 
-	// Asosiy boshlang‘ich ekranni ko‘rsatish
+	// Show the initial screen
 	document.getElementById("modeSelection").classList.remove("hidden");
 
-	// Final natijalarni tozalash
+	// Clear final results
 	document.getElementById("finalTeamsDisplay").innerHTML = "";
 	document.getElementById("finalMapsDisplay").innerHTML = "";
 	document.getElementById("finalSidesDisplay").innerHTML = "";
 
-	// **Close tugmasi har safar o‘chib ketadi**
-	const closeButton = document.getElementById("finalResultsScreen").querySelector("button");
+	// Clear stored teams
+	team1Players = [];
+	team2Players = [];
+
+	// Remove close button
+	const closeButton = document.getElementById("restartButton");
 	if (closeButton) {
 		closeButton.remove();
 	}
@@ -246,67 +255,20 @@ function generatePlayers(playerCount) {
 }
 
 // Jamoalarni yaratish
-// function generateTeams(players) {
-// 	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
-// 	let mid = Math.floor(players.length / 2);
+function generateTeams(players) {
+	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
+	let mid = Math.floor(players.length / 2);
 
-// 	let team1 = shuffledPlayers.slice(0, mid);
-// 	let team2 = shuffledPlayers.slice(mid);
+	let team1 = shuffledPlayers.slice(0, mid);
+	let team2 = shuffledPlayers.slice(mid);
 
-// 	console.log("Team 1:", team1);
-// 	console.log("Team 2:", team2);
-// }
-
-// === Tricky code
-
-function generateTeams() {
-	const teamScreen = document.getElementById("teamScreen");
-	const loadingDiv = document.createElement("div");
-	loadingDiv.classList.add("loading-animation");
-	loadingDiv.innerText = "Generating teams...";
-	teamScreen.appendChild(loadingDiv);
-
-	setTimeout(() => {
-		loadingDiv.remove();
-
-		const playerNames = players.map((input) => input.value.trim()).filter((name) => name.length >= 1);
-
-		if (playerNames.length < players.length) {
-			showToast("Iltimos, barcha o'yinchilarni kiriting!", "red");
-			return;
-		}
-
-		// 1-input va 10-inputlarni bitta jamoaga tushurish
-		const specialPlayers = [playerNames[0], playerNames[9]];
-		const remainingPlayers = playerNames.slice(1, 9).concat(playerNames.slice(10));
-		const shuffledPlayers = [...remainingPlayers].sort(() => Math.random() - 0.5);
-
-		const half = Math.floor(shuffledPlayers.length / 2);
-		const ctTeam = specialPlayers.concat(shuffledPlayers.slice(0, half - 1));
-		const trTeam = shuffledPlayers.slice(half - 1);
-
-		const team1List = document.getElementById("team1List");
-		const team2List = document.getElementById("team2List");
-
-		if (!team1List || !team2List) {
-			console.error("team1List yoki team2List topilmadi!");
-			return;
-		}
-
-		team1List.innerHTML = ctTeam.map((p) => `<li>${p}</li>`).join("");
-		team2List.innerHTML = trTeam.map((p) => `<li>${p}</li>`).join("");
-
-		teamScreen.classList.remove("hidden");
-		document.getElementById("playerInputScreen").classList.add("hidden");
-
-		showToast("Teams Generated!", "green");
-	}, 1500);
+	console.log("Team 1:", team1);
+	console.log("Team 2:", team2);
 }
 
 // Random map tanlash
 function pickRandomMap() {
-	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass", "Vertigo", "Ancient", "Anubis"];
-
+	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass"];
 	let selectedMap = maps[Math.floor(Math.random() * maps.length)];
 	console.log("Selected Map:", selectedMap);
 }
