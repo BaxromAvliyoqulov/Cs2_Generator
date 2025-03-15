@@ -3,43 +3,36 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- FavIcon -->
-		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
-		<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
-		<link rel="manifest" href="favicon/site.webmanifest" />
-		<!-- custom css -->
-		<link rel="stylesheet" href="style.css" />
-		<!-- Title -->
 		<title>CS2 Team Generator</title>
+		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
 		<div class="container">
 			<h1>CS2 Team Generator</h1>
 
-			<div id="modeSelection">
+			<div id="modeSelection" class="screen">
 				<button onclick="startGame(2)">2v2</button>
 				<button onclick="startGame(3)">3v3</button>
 				<button onclick="startGame(4)">4v4</button>
 				<button onclick="startGame(5)">5v5</button>
-				<button onclick="startGame(6)">⚡</button>
+				<button onclick="startGameQuick()">⚡</button>
 			</div>
 
-			<div id="playerInputScreen" class="hidden">
+			<div id="playerInputScreen" class="screen hidden">
 				<h2>Enter Player Names</h2>
 				<div id="playerInputs"></div>
 				<button onclick="generateTeams()">Generate Teams</button>
 			</div>
 
-			<div id="teamScreen" class="hidden">
+			<div id="teamScreen" class="screen hidden">
 				<h2>Generated Teams</h2>
 				<div class="teams">
-					<div class="team ct-team" id="team">
-						<h3>Team 1️⃣</h3>
+					<div class="team ct-team">
+						<h3>Team 1️⃣ (CT)</h3>
 						<ol id="team1List"></ol>
 					</div>
-					<div class="team tr-team" id="team">
-						<h3>Team 2️⃣</h3>
+					<div class="team tr-team">
+						<h3>Team 2️⃣ (TR)</h3>
 						<ol id="team2List"></ol>
 					</div>
 				</div>
@@ -47,62 +40,45 @@
 				<button onclick="nextStep()">Next</button>
 			</div>
 
-			<div id="mapSelectionScreen" class="hidden">
+			<div id="mapSelectionScreen" class="screen hidden">
 				<h2>Choose Map Mode</h2>
 				<button onclick="chooseMapMode('bo1')">BO1</button>
 				<button onclick="chooseMapMode('bo3')">BO3</button>
 				<button onclick="chooseMapMode('bo5')">BO5</button>
 			</div>
 
-			<div id="mapScreen" class="hidden">
+			<div id="mapScreen" class="screen hidden">
 				<h2>Generated Maps</h2>
 				<ol id="mapList"></ol>
-				<!-- ✅ ol -> ul ga o'zgartirildi -->
 				<button onclick="generateMaps()">Regenerate Maps</button>
 				<button onclick="finalStep()">Next</button>
 			</div>
 
-			<div id="teamDecisionScreen" class="hidden" style="margin-bottom: 10px">
+			<div id="teamDecisionScreen" class="screen hidden">
 				<h2>Final Team Decision</h2>
 				<hr />
 				<p id="teamDecisionDisplay"></p>
 				<hr />
-				<div class="teams">
-					<div id="finalTeam1" class="team"><h3>Team 1️⃣</h3></div>
-					<hr  class="max"/>
-					<div id="finalTeam2" class="team"><h3>Team 2️⃣</h3></div>
-				</div>
 				<button onclick="determineSides()">Decide CT / TR</button>
 				<button onclick="showResults()">Finish</button>
 			</div>
 
-			<div id="finalResultsScreen" class="hidden">
+			<div id="finalResultsScreen" class="screen hidden">
 				<h2>Final Results</h2>
 				<h3 style="font-weight: bold">Match Format: <span id="selectedFormat"></span></h3>
 				<hr />
-				<div id="finalTeamsDisplay">
-					<div class="divForFlex">
-						<div class="final-team" id="team">
-							<h3>Team 1️⃣ (CT)</h3>
-							<ol id="finalTeam1List"></ol>
-						</div>
-						<hr />
-						<div class="final-team" id="team">
-							<h3>Team 2️⃣ (TR)</h3>
-							<ol id="finalTeam2List"></ol>
-						</div>
-					</div>
-				</div>
+				<div id="finalTeamsDisplay"></div>
 				<hr />
 				<div id="finalSidesDisplay">Team 1️⃣ - CT | Team 2️⃣ - TR</div>
 				<hr />
 				<div id="finalMapsDisplay"></div>
+				<button id="restartButton" onclick="restartGame()">Close & Restart</button>
+				<button id="regenerateButton" class="hidden" onclick="startGameQuick()">Regenerate</button>
 			</div>
 		</div>
 		<footer>
 			<b> © 2025<a href="https://t.me/Baxrom_Dev"> Baxrom Dev. </a> All rights reserved. </b>
 		</footer>
-		<!-- main app -->
-		<script src="app.js" defer></script>
+		<script src="app.js"></script>
 	</body>
 </html>

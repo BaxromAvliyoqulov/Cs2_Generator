@@ -178,14 +178,14 @@ function showResults() {
 	const team2Side = teamSides[1].trim().split(": ")[1].trim();
 
 	let finalPlayers = `
-    <div class="final-team">
+    <div class="final-team" id="team">
         <h3>Team 1️⃣ (${team1Side})</h3>
         <ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
     </div>
 
-    <hr style="width: 50%; height: 3px; background-color: crimson; margin: auto; border: none;" />
+    <hr style="width: 50%; height: 3px; background-color: blue; margin: auto; border: none;" class="max"/>
 
-    <div class="final-team">
+    <div class="final-team" id="team">
         <h3>Team 2️⃣ (${team2Side})</h3>
         <ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
     </div>
@@ -245,6 +245,7 @@ function restartGame() {
 		closeButton.remove();
 	}
 }
+
 // O'yinchilar ro'yxatini avtomatik yaratish
 function generatePlayers(playerCount) {
 	let players = [];
@@ -254,21 +255,9 @@ function generatePlayers(playerCount) {
 	return players;
 }
 
-// Jamoalarni yaratish
-function generateTeams(players) {
-	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
-	let mid = Math.floor(players.length / 2);
-
-	let team1 = shuffledPlayers.slice(0, mid);
-	let team2 = shuffledPlayers.slice(mid);
-
-	console.log("Team 1:", team1);
-	console.log("Team 2:", team2);
-}
-
 // Random map tanlash
 function pickRandomMap() {
-	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass"];
+	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass", "Ancient", "Train", "Vertigo"];
 	let selectedMap = maps[Math.floor(Math.random() * maps.length)];
 	console.log("Selected Map:", selectedMap);
 }
@@ -285,12 +274,132 @@ function finishGame() {
 	console.log("Game Setup Complete! ✅");
 }
 
-// Quick Start funksiyasi
+// === Quick Start funksiyasi ===
 function startGameQuick() {
-	let players = generatePlayers(10); // 10 ta Player yaratish
+	// 10 ta Player yaratish va avtomatik nom berish
+	const playerNames = generatePlayers(10);
 
-	setTimeout(() => generateTeams(players), 500);
-	setTimeout(() => pickRandomMap(), 1000);
-	setTimeout(() => pickRandomSide(), 1500);
-	setTimeout(() => finishGame(), 2000);
+	// Jamoalarni yaratish
+	const shuffledPlayers = [...playerNames].sort(() => Math.random() - 0.5);
+	const half = Math.floor(shuffledPlayers.length / 2);
+	team1Players = shuffledPlayers.slice(0, half);
+	team2Players = shuffledPlayers.slice(half);
+
+	// Xaritalarni tanlash
+	const selectedMaps = [];
+	while (selectedMaps.length < 5) {
+		let randomMap = maps[Math.floor(Math.random() * maps.length)];
+		if (!selectedMaps.includes(randomMap)) selectedMaps.push(randomMap);
+	}
+
+	// Jamoa tomonlarini aniqlash
+	const randomSide = Math.random() < 0.5 ? "CT" : "TR";
+	const team1Side = randomSide;
+	const team2Side = randomSide === "CT" ? "TR" : "CT";
+	finalSidesText = `Team 1: ${team1Side} | Team 2: ${team2Side}`;
+
+	// Natijalarni ko'rsatish
+	document.getElementById("finalResultsScreen").classList.remove("hidden");
+	document.getElementById("modeSelection").classList.add("hidden");
+
+	let finalPlayers = `
+    <div class="final-team" id="team">
+        <h3>Team 1️⃣ (${team1Side})</h3>
+        <ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+
+    <hr style="width: 50%; height: 3px; background-color: blue; margin: auto; border: none;" class="max"/>
+
+    <div class="final-team" id="team">
+        <h3>Team 2️⃣ (${team2Side})</h3>
+        <ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+    `;
+
+	let finalMaps = `<h3><strong>Maps Order:</strong></h3><ol>${selectedMaps
+		.map((m) => `<li>${m}</li>`)
+		.join("")}</ol>`;
+
+	document.getElementById("finalTeamsDisplay").innerHTML = finalPlayers;
+	document.getElementById("finalMapsDisplay").innerHTML = finalMaps;
+	document.getElementById(
+		"finalSidesDisplay"
+	).innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
+
+	// Remove any existing close button before adding a new one
+	const existingCloseButton = document.getElementById("restartButton");
+	if (existingCloseButton) {
+		existingCloseButton.remove();
+	}
+
+	let closeButton = document.createElement("button");
+	closeButton.id = "restartButton";
+	closeButton.innerText = "Close & Restart";
+	closeButton.style.marginTop = "20px";
+	closeButton.style.padding = "10px 20px";
+	closeButton.style.fontSize = "18px";
+	closeButton.style.cursor = "pointer";
+	closeButton.addEventListener("click", restartGame);
+
+	document.getElementById("finalResultsScreen").appendChild(closeButton);
+
+	// Show the regenerate button only in quick game mode
+	const regenerateButton = document.getElementById("regenerateButton");
+	regenerateButton.classList.remove("hidden");
+}
+
+function showResults() {
+	document.getElementById("finalResultsScreen").classList.remove("hidden");
+	document.getElementById("teamDecisionScreen").classList.add("hidden");
+
+	// Ensure we're using the teams created in generateTeams()
+	const teamSides = finalSidesText.split("|");
+	const team1Side = teamSides[0].trim().split(": ")[1].trim();
+	const team2Side = teamSides[1].trim().split(": ")[1].trim();
+
+	let finalPlayers = `
+    <div class="final-team" id="team">
+        <h3>Team 1️⃣ (${team1Side})</h3>
+        <ol>${team1Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+
+    <hr style="width: 50%; height: 3px; background-color: blue; margin: auto; border: none;" class="max"/>
+
+    <div class="final-team" id="team">
+        <h3>Team 2️⃣ (${team2Side})</h3>
+        <ol>${team2Players.map((player) => `<li>${player}</li>`).join("")}</ol>
+    </div>
+    `;
+
+	let mapList = document.getElementById("mapList").innerHTML.trim();
+	let finalMaps = mapList
+		? `<h3><strong>Maps Order:</strong></h3><ol>${mapList}</ol>`
+		: `<h3><strong>Maps Order:</strong></h3><p>No maps selected.</p>`;
+
+	document.getElementById("finalTeamsDisplay").innerHTML = finalPlayers;
+	document.getElementById("finalMapsDisplay").innerHTML = finalMaps;
+	document.getElementById(
+		"finalSidesDisplay"
+	).innerHTML = `<p style="font-size:22px; font-weight:bold;">${finalSidesText}</p>`;
+
+	// Remove any existing close button before adding a new one
+	const existingButton = document.getElementById("restartButton");
+	if (existingButton) {
+		existingButton.remove();
+	}
+
+	let closeButton = document.createElement("button");
+	closeButton.id = "restartButton";
+	closeButton.innerText = "Close & Restart";
+	closeButton.style.marginTop = "20px";
+	closeButton.style.padding = "10px 20px";
+	closeButton.style.fontSize = "18px";
+	closeButton.style.cursor = "pointer";
+	closeButton.addEventListener("click", restartGame);
+
+	document.getElementById("finalResultsScreen").appendChild(closeButton);
+
+	// Hide the regenerate button in normal game mode
+	const regenerateButton = document.getElementById("regenerateButton");
+	regenerateButton.classList.add("hidden");
 }
