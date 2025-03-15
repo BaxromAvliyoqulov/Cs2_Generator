@@ -246,20 +246,67 @@ function generatePlayers(playerCount) {
 }
 
 // Jamoalarni yaratish
-function generateTeams(players) {
-	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
-	let mid = Math.floor(players.length / 2);
+// function generateTeams(players) {
+// 	let shuffledPlayers = players.sort(() => Math.random() - 0.5); // Aralashtirish
+// 	let mid = Math.floor(players.length / 2);
 
-	let team1 = shuffledPlayers.slice(0, mid);
-	let team2 = shuffledPlayers.slice(mid);
+// 	let team1 = shuffledPlayers.slice(0, mid);
+// 	let team2 = shuffledPlayers.slice(mid);
 
-	console.log("Team 1:", team1);
-	console.log("Team 2:", team2);
+// 	console.log("Team 1:", team1);
+// 	console.log("Team 2:", team2);
+// }
+
+// === Tricky code
+
+function generateTeams() {
+	const teamScreen = document.getElementById("teamScreen");
+	const loadingDiv = document.createElement("div");
+	loadingDiv.classList.add("loading-animation");
+	loadingDiv.innerText = "Generating teams...";
+	teamScreen.appendChild(loadingDiv);
+
+	setTimeout(() => {
+		loadingDiv.remove();
+
+		const playerNames = players.map((input) => input.value.trim()).filter((name) => name.length >= 1);
+
+		if (playerNames.length < players.length) {
+			showToast("Iltimos, barcha o'yinchilarni kiriting!", "red");
+			return;
+		}
+
+		// 1-input va 10-inputlarni bitta jamoaga tushurish
+		const specialPlayers = [playerNames[0], playerNames[9]];
+		const remainingPlayers = playerNames.slice(1, 9).concat(playerNames.slice(10));
+		const shuffledPlayers = [...remainingPlayers].sort(() => Math.random() - 0.5);
+
+		const half = Math.floor(shuffledPlayers.length / 2);
+		const ctTeam = specialPlayers.concat(shuffledPlayers.slice(0, half - 1));
+		const trTeam = shuffledPlayers.slice(half - 1);
+
+		const team1List = document.getElementById("team1List");
+		const team2List = document.getElementById("team2List");
+
+		if (!team1List || !team2List) {
+			console.error("team1List yoki team2List topilmadi!");
+			return;
+		}
+
+		team1List.innerHTML = ctTeam.map((p) => `<li>${p}</li>`).join("");
+		team2List.innerHTML = trTeam.map((p) => `<li>${p}</li>`).join("");
+
+		teamScreen.classList.remove("hidden");
+		document.getElementById("playerInputScreen").classList.add("hidden");
+
+		showToast("Teams Generated!", "green");
+	}, 1500);
 }
 
 // Random map tanlash
 function pickRandomMap() {
-	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass"];
+	const maps = ["Dust2", "Mirage", "Inferno", "Nuke", "Overpass", "Vertigo", "Ancient", "Anubis"];
+
 	let selectedMap = maps[Math.floor(Math.random() * maps.length)];
 	console.log("Selected Map:", selectedMap);
 }
