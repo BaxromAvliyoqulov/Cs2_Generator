@@ -246,13 +246,19 @@ function restartGame() {
 	}
 }
 
-// O'yinchilar ro'yxatini avtomatik yaratish
+// Улучшенная функция создания и перемешивания игроков
 function generatePlayers(playerCount) {
-	let players = [];
-	for (let i = 1; i <= playerCount; i++) {
-		players.push(`Player${i}`);
-	}
-	return players;
+    let players = [];
+    // Создаем массив игроков
+    for (let i = 1; i <= playerCount; i++) {
+        players.push(`Player${i}`);
+    }
+    // Тщательно перемешиваем массив используя алгоритм Фишера-Йетса
+    for (let i = players.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [players[i], players[j]] = [players[j], players[i]];
+    }
+    return players;
 }
 
 // Random map tanlash
@@ -276,16 +282,16 @@ function finishGame() {
 
 // === Quick Start funksiyasi ===
 function startGameQuick() {
-	// 10 ta Player yaratish va avtomatik nom berish
-	const playerNames = generatePlayers(10);
+    // Создаем и перемешиваем 10 игроков
+    const playerNames = generatePlayers(10);
+    
+    // Делим на команды (уже перемешанный массив)
+    const half = Math.floor(playerNames.length / 2);
+    team1Players = playerNames.slice(0, half);
+    team2Players = playerNames.slice(half);
 
-	// Jamoalarni yaratish
-	const shuffledPlayers = [...playerNames].sort(() => Math.random() - 0.5);
-	const half = Math.floor(shuffledPlayers.length / 2);
-	team1Players = shuffledPlayers.slice(0, half);
-	team2Players = shuffledPlayers.slice(half);
-
-	// Xaritalarni tanlash
+    // Остальной код остается без изменений
+    // Xaritalarni tanlash
 	const selectedMaps = [];
 	while (selectedMaps.length < 5) {
 		let randomMap = maps[Math.floor(Math.random() * maps.length)];
